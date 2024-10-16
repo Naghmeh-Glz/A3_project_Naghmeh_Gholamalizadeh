@@ -412,28 +412,28 @@ print(y_pred)  #[0]
 
 '''
 
-#    Model                Best_Params                               Test_score
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-       LR           {'fit_intercept': False}                          0.947
+#    Model                Best_Params                  Test_score        Sample Prediction
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       LR           {'fit_intercept': False}            0.947                [1]
        
 
-       KN         {'metric': 'manhattan',                             0.943
+       KN         {'metric': 'manhattan',               0.943                [0]
                    'n_neighbors': 10}  
         
        
-       DT          {'max_depth': 5,                                   0.943
+       DT          {'max_depth': 5,                     0.943                [1]
                     'min_samples_leaf': 2,
                     'min_samples_split': 2} 
        
        
-       RF           {'max_depth': 10,                                 0.970
+       RF           {'max_depth': 10,                   0.970                [1]
                      'max_features': 5,
                      'min_samples_leaf': 2,
                      'min_samples_split': 5,
                      'n_estimators': 50}
        
        
-       SVM            {'C': 1,                                        0.982
+       SVM            {'C': 1,                          0.982                [0]
                        'degree': 2,
                        'gamma': 1, 
                        'kernel': 'poly'}                                               
@@ -450,3 +450,98 @@ to svm model ({'C': 1, 'degree': 2, 'gamma': 1, 'kernel': 'poly'}), demonestrate
 '''
 
 
+
+#------------------------------------------------------------------------------
+#-------------------->>>> Step 7,  Data Plot (2D)   <<<<<------------------
+#------------------------------------------------------------------------------
+
+
+
+title_style={'family':'times new roman',
+             'color':'red',
+             'size':28}
+label_style={'family':'times new roman',
+              'color':'black',
+             'size':14}
+
+
+
+#Prediction 
+
+y_pred = gs.predict(x_scaled)
+
+
+#x columns Selecting and Stacking
+
+x_final=pd.concat([x['mean radius'],x['mean smoothness']],axis=1)
+
+#Benign and Malignant separation 
+
+malignant = []
+benign = []
+
+for i in range(len(y_pred)):
+    if y_pred[i] == 1:
+        malignant.append((x_final.iloc[i,0], x_final.iloc[i,1]))
+    else:
+        benign.append((x_final.iloc[i,0], x_final.iloc[i,1])) 
+
+malignant = np.array(malignant)
+benign = np.array(benign)
+
+
+plt.figure(figsize=(10, 6))
+plt.scatter(malignant[:,0], malignant[:,1], c='red', label='Malignant')
+plt.scatter(benign[:,0], benign[:,1], c='blue', label='Benign')
+
+plt.title('Breast Cancer Prediction', fontdict=title_style)
+plt.xlabel('Mean Radius', fontdict=label_style)
+plt.ylabel('Mean Smoothness', fontdict=label_style)
+plt.legend()
+plt.grid()
+plt.show()
+
+
+
+#------------------------------------------------------------------------------
+#-------------------->>>> Step 7,  Data Plot (3D)   <<<<<------------------
+#------------------------------------------------------------------------------
+
+
+
+y_pred = gs.predict(x_scaled)
+
+
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+#x columns Selecting and Stacking
+
+x_final=pd.concat([x['mean radius'],x['mean smoothness'],x['mean compactness']],axis=1)
+
+#Benign and Malignant separation 
+
+malignant = []
+benign = []
+
+for i in range(len(y_pred)):
+    if y_pred[i] == 1:
+        malignant.append((x_final.iloc[i,0], x_final.iloc[i,1]))
+    else:
+        benign.append((x_final.iloc[i,0], x_final.iloc[i,1])) 
+
+malignant = np.array(malignant)
+benign = np.array(benign)
+
+
+
+ax.scatter(malignant[:, 0], malignant[:, 1], c='red', label='Malignant')
+ax.scatter(benign[:, 0], benign[:, 1], c='blue', label='Benign')
+
+
+ax.set_title('3D Scatter Plot of Breast Cancer Data', fontsize=20, fontdict=title_style)
+ax.set_xlabel('Mean Radius', fontdict=label_style)
+ax.set_ylabel('Mean Compactness', fontdict=label_style)
+ax.set_zlabel('Mean Smoothness', fontdict=label_style)
+ax.legend()
+plt.show()
